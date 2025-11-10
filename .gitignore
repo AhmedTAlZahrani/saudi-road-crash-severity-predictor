@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.env
+data/
+models/*.pkl
+*.joblib
+output/
+htmlcov/
+.coverage
+.ipynb_checkpoints/
+*.DS_Store
+Thumbs.db
