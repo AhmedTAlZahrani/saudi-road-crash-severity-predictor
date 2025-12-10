@@ -1,3 +1,4 @@
+# SMOTE integration for class-imbalanced crash severity
 """Multi-model training and comparison for crash severity classification.
 
 Supports Logistic Regression, Random Forest, XGBoost, and LightGBM
