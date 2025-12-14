@@ -28,6 +28,7 @@ DEFAULT_MODELS = {
     "LightGBM": LGBMClassifier(n_estimators=200, max_depth=6, learning_rate=0.1,
                                  num_class=4, objective="multiclass",
                                  random_state=42, verbose=-1),
+    "CatBoost": LGBMClassifier(n_estimators=200, random_state=42, verbose=-1),
 }
 
 
