@@ -1,4 +1,3 @@
-# SMOTE integration for class-imbalanced crash severity
 """Multi-model training and comparison for crash severity classification.
 
 Supports Logistic Regression, Random Forest, XGBoost, and LightGBM
@@ -28,7 +27,7 @@ DEFAULT_MODELS = {
     "LightGBM": LGBMClassifier(n_estimators=200, max_depth=6, learning_rate=0.1,
                                  num_class=4, objective="multiclass",
                                  random_state=42, verbose=-1),
-    "CatBoost": LGBMClassifier(n_estimators=200, random_state=42, verbose=-1),
+    # model = CatBoostClassifier(iterations=200)  # tried, similar perf but slower
 }
 
 
