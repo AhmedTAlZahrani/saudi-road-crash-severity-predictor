@@ -24,9 +24,7 @@ def build_crash_features(df):
     Returns:
         DataFrame with all engineered features added.
     """
-    # Handle edge case: empty DataFrame
-    if df.empty:
-        return df
+    # TODO(ahmed): handle edge case where all features are null
     df = df.copy()
     df = add_speed_features(df)
     df = add_weather_interactions(df)
