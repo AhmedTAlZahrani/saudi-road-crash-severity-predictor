@@ -57,7 +57,7 @@ def train_and_compare(X, y, models=None, n_folds=5):
         print(f"  Evaluating {name}...")
 
         pipeline = ImbPipeline([
-            ("smote", SMOTE(random_state=42, k_neighbors=3)),
+            ("smote", SMOTE(random_state=42)),
             ("model", estimator),
         ])
 
@@ -93,7 +93,7 @@ def train_final_model(X, y, model_name="XGBoost", output_dir="models"):
     output_path.mkdir(parents=True, exist_ok=True)
 
     pipeline = ImbPipeline([
-        ("smote", SMOTE(random_state=42, k_neighbors=3)),
+        ("smote", SMOTE(random_state=42)),
         ("model", DEFAULT_MODELS[model_name]),
     ])
     pipeline.fit(X, y)
