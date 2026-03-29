@@ -4,10 +4,14 @@ Supports Logistic Regression, Random Forest, XGBoost, and LightGBM
 with SMOTE oversampling for class imbalance handling.
 """
 
+import logging
+
 import pandas as pd
 import numpy as np
 import joblib
 from pathlib import Path
+
+logger = logging.getLogger("crash_predictor")
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
@@ -52,8 +56,11 @@ def train_and_compare(X, y, models=None, n_folds=5):
     cv = StratifiedKFold(n_splits=n_folds, shuffle=True, random_state=42)
     scoring = ["accuracy", "precision_weighted", "recall_weighted", "f1_weighted"]
 
+    logger.info("Starting model comparison with %d models, %d folds", len(models), n_folds)
+
     rows = []
     for name, estimator in models.items():
+        logger.info("Evaluating %s", name)
         print(f"  Evaluating {name}...")
 
         pipeline = ImbPipeline([
@@ -72,6 +79,7 @@ def train_and_compare(X, y, models=None, n_folds=5):
 
     comparison = pd.DataFrame(rows).sort_values("f1", ascending=False)
     best = comparison.iloc[0]
+    logger.info("Best model: %s (weighted F1=%.4f)", best["Model"], best["f1"])
     print(f"\nBest model: {best['Model']} (weighted F1={best['f1']:.4f})")
 
     return comparison
@@ -96,10 +104,12 @@ def train_final_model(X, y, model_name="XGBoost", output_dir="models"):
         ("smote", SMOTE(random_state=42)),
         ("model", DEFAULT_MODELS[model_name]),
     ])
+    logger.info("Training final model: %s on %d samples", model_name, len(y))
     pipeline.fit(X, y)
 
     model_file = output_path / f"{model_name.lower()}.pkl"
     joblib.dump(pipeline, model_file)
+    logger.info("Model saved to %s", model_file)
     print(f"Model saved to {model_file}")
 
     return pipeline

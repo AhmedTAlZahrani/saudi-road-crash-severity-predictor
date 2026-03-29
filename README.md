@@ -1,5 +1,7 @@
 # Saudi Road Crash Severity Predictor
 
+![Tests](https://github.com/AhmedTAlZahrani/saudi-road-crash-severity-predictor/actions/workflows/test.yml/badge.svg)
+
 ML pipeline for predicting road crash severity on Saudi Arabia's highway network, supporting Vision 2030 road safety objectives.
 
 ---
@@ -147,6 +149,14 @@ data_loader ──> transforms ──> Train/Test Split
                      Save (joblib)
                             │
                    FastAPI + Docker
+```
+
+---
+
+## Tests
+
+```bash
+pytest tests/ -v
 ```
 
 ---

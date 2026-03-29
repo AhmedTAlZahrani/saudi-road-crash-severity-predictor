@@ -23,8 +23,21 @@ def build_crash_features(df):
 
     Returns:
         DataFrame with all engineered features added.
+
+    Raises:
+        ValueError: If required columns are missing from the input.
     """
-    # TODO(ahmed): handle edge case where all features are null
+    required_cols = {"estimated_speed", "speed_limit"}
+    missing = required_cols - set(df.columns)
+    if missing:
+        raise ValueError(
+            f"Input DataFrame is missing required columns: {sorted(missing)}. "
+            f"Available columns: {sorted(df.columns.tolist())}"
+        )
+
+    if df.empty:
+        raise ValueError("Input DataFrame is empty — cannot build crash features")
+
     df = df.copy()
     df = add_speed_features(df)
     df = add_weather_interactions(df)
