@@ -4,7 +4,6 @@ Standalone functions for building Saudi-specific derived features
 and risk indices from raw crash data.
 """
 
-import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
