@@ -71,7 +71,7 @@ class TestTrainAndCompare:
         fast_models = {
             "LogReg": LogisticRegression(max_iter=200, random_state=42),
         }
-        result = train_and_compare(X, y, models=fast_models, n_folds=2)
+        result = train_and_compare(X, y, models=fast_models, n_folds=2, save_results=False)
 
         assert isinstance(result, pd.DataFrame)
         assert len(result) == 1
@@ -85,7 +85,7 @@ class TestTrainAndCompare:
             "LogReg": LogisticRegression(max_iter=200, random_state=42),
             "LogReg_C01": LogisticRegression(max_iter=200, C=0.01, random_state=42),
         }
-        result = train_and_compare(X, y, models=two_models, n_folds=2)
+        result = train_and_compare(X, y, models=two_models, n_folds=2, save_results=False)
 
         f1_values = result["f1"].tolist()
         assert f1_values == sorted(f1_values, reverse=True)
@@ -96,7 +96,7 @@ class TestTrainAndCompare:
         fast_models = {
             "LogReg": LogisticRegression(max_iter=200, random_state=42),
         }
-        result = train_and_compare(X, y, models=fast_models, n_folds=2)
+        result = train_and_compare(X, y, models=fast_models, n_folds=2, save_results=False)
 
         for col in ["accuracy", "precision", "recall", "f1"]:
             assert col in result.columns, f"Missing column: {col}"
@@ -107,7 +107,7 @@ class TestTrainAndCompare:
         fast_models = {
             "LogReg": LogisticRegression(max_iter=200, random_state=42),
         }
-        result = train_and_compare(X, y, models=fast_models, n_folds=2)
+        result = train_and_compare(X, y, models=fast_models, n_folds=2, save_results=False)
 
         for col in ["accuracy", "precision", "recall", "f1"]:
             val = result[col].iloc[0]

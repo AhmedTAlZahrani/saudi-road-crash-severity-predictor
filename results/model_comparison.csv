@@ -1,0 +1,5 @@
+Model,accuracy,precision,recall,f1
+XGBoost,0.8230,0.8170,0.8230,0.8190
+LightGBM,0.8190,0.8120,0.8190,0.8150
+RandomForest,0.8050,0.7980,0.8050,0.7990
+LogisticRegression,0.7280,0.7140,0.7280,0.7120

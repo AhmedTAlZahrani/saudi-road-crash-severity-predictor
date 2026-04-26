@@ -5,13 +5,10 @@ with SMOTE oversampling for class imbalance handling.
 """
 
 import logging
-
-import pandas as pd
-import numpy as np
-import joblib
 from pathlib import Path
 
-logger = logging.getLogger("crash_predictor")
+import joblib
+import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
@@ -19,6 +16,10 @@ from lightgbm import LGBMClassifier
 from sklearn.model_selection import StratifiedKFold, cross_validate
 from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import Pipeline as ImbPipeline
+
+logger = logging.getLogger("crash_predictor")
+
+RESULTS_DIR = Path(__file__).resolve().parents[1] / "results"
 
 
 DEFAULT_MODELS = {
@@ -35,7 +36,39 @@ DEFAULT_MODELS = {
 }
 
 
-def train_and_compare(X, y, models=None, n_folds=5):
+def _write_results_summary(comparison, results_dir=RESULTS_DIR):
+    """Persist the cross-validated comparison as CSV + markdown."""
+    results_dir = Path(results_dir)
+    results_dir.mkdir(parents=True, exist_ok=True)
+
+    csv_path = results_dir / "model_comparison.csv"
+    md_path = results_dir / "model_comparison.md"
+
+    comparison.to_csv(csv_path, index=False)
+
+    best = comparison.iloc[0]
+    lines = [
+        "# Saudi Road Crash Severity Predictor — Model Comparison",
+        "",
+        "Cross-validated weighted metrics on the synthetic crash dataset, "
+        "sorted by F1.",
+        "",
+        f"Best model: **{best['Model']}** "
+        f"(weighted F1 = {best['f1']:.4f}).",
+        "",
+        "| Model | Accuracy | Precision | Recall | F1 |",
+        "|-------|----------|-----------|--------|-----|",
+    ]
+    for _, r in comparison.iterrows():
+        lines.append(
+            f"| {r['Model']} | {r['accuracy']:.4f} | "
+            f"{r['precision']:.4f} | {r['recall']:.4f} | {r['f1']:.4f} |"
+        )
+    md_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    return csv_path, md_path
+
+
+def train_and_compare(X, y, models=None, n_folds=5, save_results=True):
     """Train multiple classifiers and return cross-validated comparison.
 
     Each model is wrapped in a SMOTE pipeline to handle class imbalance.
@@ -46,6 +79,8 @@ def train_and_compare(X, y, models=None, n_folds=5):
         y: Target vector (0-3 severity levels).
         models: Dict of model name -> estimator. Uses DEFAULT_MODELS if None.
         n_folds: Number of stratified CV folds.
+        save_results: If True, write the comparison to ``results/`` as CSV
+            and markdown for later reference.
 
     Returns:
         DataFrame with cross-validation metrics per model, sorted by F1.
@@ -81,6 +116,10 @@ def train_and_compare(X, y, models=None, n_folds=5):
     best = comparison.iloc[0]
     logger.info("Best model: %s (weighted F1=%.4f)", best["Model"], best["f1"])
     print(f"\nBest model: {best['Model']} (weighted F1={best['f1']:.4f})")
+
+    if save_results:
+        csv_path, md_path = _write_results_summary(comparison)
+        print(f"Saved comparison to {csv_path} and {md_path}")
 
     return comparison
 
