@@ -1,5 +1,6 @@
 """FastAPI prediction server for crash severity classification."""
 
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 import joblib
@@ -8,13 +9,6 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 from src.transforms import build_crash_features
-
-
-app = FastAPI(
-    title="Saudi Road Crash Severity Prediction API",
-    description="Predict crash severity (property_only, minor, severe, fatal) with risk scoring.",
-    version="1.0.0",
-)
 
 SEVERITY_LABELS = ["property_only", "minor_injury", "severe_injury", "fatal"]
 
@@ -62,9 +56,19 @@ class ModelRegistry:
 registry = ModelRegistry()
 
 
-@app.on_event("startup")
-def load_artifacts():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Load model artifacts at startup. Newer FastAPI replacement for on_event."""
     registry.load()
+    yield
+
+
+app = FastAPI(
+    title="Saudi Road Crash Severity Prediction API",
+    description="Predict crash severity (property_only, minor, severe, fatal) with risk scoring.",
+    version="1.0.0",
+    lifespan=lifespan,
+)
 
 
 class CrashFeatures(BaseModel):
