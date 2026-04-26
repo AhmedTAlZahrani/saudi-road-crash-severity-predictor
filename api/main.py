@@ -31,16 +31,24 @@ class ModelRegistry:
         self.model = None
         self.preprocessor = None
 
-    def load(self, model_name="best_model", preprocessor_name="preprocessor"):
+    def load(self, model_name="xgboost", preprocessor_name="preprocessor"):
         """Load model and optional preprocessor from disk.
 
+        Tries ``{model_name}.pkl`` first, then falls back to ``best_model.pkl``
+        if present, so deployments can override the default-trained model
+        without touching the API code.
+
         Args:
-            model_name: Filename stem for the model artifact.
+            model_name: Filename stem for the model artifact (default
+                ``xgboost`` since this is the best performer reported in
+                the README).
             preprocessor_name: Filename stem for the preprocessor artifact.
         """
-        model_path = self.models_dir / f"{model_name}.pkl"
-        if model_path.exists():
-            self.model = joblib.load(model_path)
+        for stem in (model_name, "best_model"):
+            model_path = self.models_dir / f"{stem}.pkl"
+            if model_path.exists():
+                self.model = joblib.load(model_path)
+                break
 
         prep_path = self.models_dir / f"{preprocessor_name}.pkl"
         if prep_path.exists():
